@@ -122,11 +122,25 @@ Com os dados simulados, nenhuma anomalia crítica foi identificada. Mesmo assim,
 
 ## 1.6 Reflexão crítica
 
-O uso de tecnologia em missões espaciais exige ética e responsabilidade. Sistemas automatizados podem apoiar decisões importantes, mas precisam ser claros, auditáveis e acompanhados por pessoas capacitadas. Uma decisão incorreta em um sistema crítico pode gerar riscos humanos, financeiros e ambientais.
+### Introdução
 
-A exploração espacial também possui impacto social. Ela pode estimular ciência, educação, inovação e desenvolvimento de novas tecnologias. Ao mesmo tempo, é necessário garantir que esse avanço não amplie desigualdades nem desvie recursos de problemas sociais importantes.
+O projeto de verificação de condições para uma decolagem permite refletir sobre a responsabilidade no uso da tecnologia. A análise da telemetria, a avaliação energética e o apoio da inteligência artificial devem estar associados à segurança, à transparência e ao uso consciente dos recursos. Essa perspectiva se relaciona ao tripé da sustentabilidade, que considera as dimensões econômica, social e ambiental, e aos princípios de governança presentes no ESG.
 
-Do ponto de vista da sustentabilidade tecnológica, missões espaciais e sistemas computacionais devem considerar eficiência energética, redução de desperdício, descarte correto de componentes eletrônicos e uso consciente de recursos. A tecnologia deve servir ao progresso humano sem ignorar seus impactos sobre o planeta.
+### Ética e responsabilidade
+
+No aspecto ético, a segurança deve orientar os critérios de autorização ou cancelamento da decolagem. Informações sobre temperatura, integridade estrutural, energia e pressão precisam ser verificadas, pois dados incorretos ou incompletos podem comprometer a decisão. Também é necessário apresentar os motivos do resultado, permitindo compreender quais condições foram consideradas inadequadas. A inteligência artificial pode auxiliar na identificação de anomalias, mas suas sugestões devem ser avaliadas, mantendo a responsabilidade humana. Em uma aplicação real, a simulação precisaria passar por validações técnicas rigorosas antes de integrar uma operação.
+
+### Impacto social da exploração espacial
+
+Quanto ao impacto social, a exploração espacial pode contribuir para pesquisas científicas, comunicação e monitoramento ambiental. Entretanto, esses benefícios precisam ser avaliados junto aos custos, aos riscos e à sua distribuição na sociedade. Uma atuação socialmente responsável deve considerar tanto as pessoas envolvidas nas operações quanto as comunidades afetadas, buscando ampliar o acesso aos conhecimentos e às tecnologias desenvolvidas. Dessa forma, o avanço tecnológico deve estar acompanhado de benefícios coletivos e respeito aos interesses das partes envolvidas.
+
+### Sustentabilidade tecnológica
+
+Na dimensão ambiental, a análise da capacidade energética, da carga disponível, do consumo previsto e das perdas contribui para o planejamento do uso de energia. Essa abordagem se alinha à TI Verde ao permitir identificar oportunidades de eficiência, sem comprometer as margens de segurança. Entretanto, a sustentabilidade também exige considerar o ciclo de vida dos equipamentos, desde a extração de materiais e a fabricação até a manutenção e o descarte. Práticas de reparo, reutilização segura e reciclagem, associadas à economia circular, podem reduzir desperdícios e a geração de resíduos.
+
+### Conclusão
+
+Por fim, é necessário reconhecer os limites do projeto: calcular o consumo e as perdas energéticas não comprova que toda a missão seja sustentável. Afirmações sobre redução de impactos exigem indicadores e comparações, evitando o greenwashing. Assim, o projeto demonstra que uma decisão tecnicamente viável deve ser acompanhada de critérios éticos, responsabilidade social e atenção ambiental. O sucesso de uma missão envolve não apenas alcançar seu objetivo, mas também justificar suas decisões, proteger as pessoas e utilizar os recursos de maneira responsável.
 
 ## 2. Entregáveis
 
