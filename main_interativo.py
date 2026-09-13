@@ -1,31 +1,12 @@
 """Versão interativa da simulação de pré-decolagem da Aurora Siger."""
 
-import random
-
-from banco_dados import salvar_execucao
-
-
-def ler_float(mensagem, valor_padrao):
-    entrada = input(f"{mensagem} [{valor_padrao}]: ").strip()
-
-    if entrada == "":
-        return float(valor_padrao)
-
-    return float(entrada.replace(",", "."))
-
-
-def ler_opcao():
-    while True:
-        print("\nEscolha como deseja carregar a telemetria:")
-        print("1 - Usar preset seguro")
-        print("2 - Gerar dados randômicos")
-
-        opcao = input("Opção escolhida: ").strip()
-
-        if opcao in ("1", "2"):
-            return opcao
-
-        print("Opção inválida. Digite 1 ou 2.")
+from banco_dados import salvar_cenario_decolagem
+from simulacao_decolagem import (
+    CENARIOS_DISPONIVEIS,
+    analisar_cenario,
+    converter_para_telemetria_resumida,
+    gerar_telemetria_cenario,
+)
 
 
 def mostrar_titulo(titulo):
@@ -38,65 +19,25 @@ def mostrar_linha():
     print("-" * 60)
 
 
-def gerar_preset():
-    return {
-        "temperatura_interna_c": 24,
-        "temperatura_externa_c": -18,
-        "integridade_estrutural": 1,
-        "nivel_energia_percentual": 87,
-        "pressao_tanques_percentual": 95,
-        "modulos_criticos": "OK",
-    }
+def ler_opcao():
+    while True:
+        print("\nEscolha um cenário de pré-decolagem:")
+        for opcao, cenario in CENARIOS_DISPONIVEIS.items():
+            print(f"{opcao} - {cenario}")
 
+        opcao = input("Opção escolhida: ").strip()
 
-def gerar_dados_randomicos():
-    status_modulos = ["OK", "OK", "OK", "FALHA"]
+        if opcao in CENARIOS_DISPONIVEIS:
+            return CENARIOS_DISPONIVEIS[opcao]
 
-    return {
-        "temperatura_interna_c": round(random.uniform(10, 45), 1),
-        "temperatura_externa_c": round(random.uniform(-70, 75), 1),
-        "integridade_estrutural": random.choice([1, 1, 1, 0]),
-        "nivel_energia_percentual": round(random.uniform(40, 100), 1),
-        "pressao_tanques_percentual": round(random.uniform(60, 130), 1),
-        "modulos_criticos": random.choice(status_modulos),
-    }
-
-
-def verificar_telemetria(telemetria, faixas_seguras):
-    temperatura_interna_ok = (
-        faixas_seguras["temperatura_interna_min"]
-        <= telemetria["temperatura_interna_c"]
-        <= faixas_seguras["temperatura_interna_max"]
-    )
-    temperatura_externa_ok = (
-        faixas_seguras["temperatura_externa_min"]
-        <= telemetria["temperatura_externa_c"]
-        <= faixas_seguras["temperatura_externa_max"]
-    )
-    integridade_ok = telemetria["integridade_estrutural"] == 1
-    energia_ok = telemetria["nivel_energia_percentual"] >= faixas_seguras["nivel_energia_min"]
-    pressao_ok = (
-        faixas_seguras["pressao_tanques_min"]
-        <= telemetria["pressao_tanques_percentual"]
-        <= faixas_seguras["pressao_tanques_max"]
-    )
-    modulos_ok = telemetria["modulos_criticos"] == "OK"
-
-    return {
-        "Temperatura interna": temperatura_interna_ok,
-        "Temperatura externa": temperatura_externa_ok,
-        "Integridade estrutural": integridade_ok,
-        "Nível de energia": energia_ok,
-        "Pressão dos tanques": pressao_ok,
-        "Módulos críticos": modulos_ok,
-    }
+        print("Opção inválida. Digite um dos números listados.")
 
 
 def calcular_energia(telemetria):
-    capacidade_total_kwh = ler_float("\nCapacidade total da nave em kWh", 1200)
-    consumo_decolagem_kwh = ler_float("Consumo estimado na decolagem em kWh", 260)
-    perdas_percentual = ler_float("Perdas energéticas em percentual", 6)
-    consumo_operacional_kw = ler_float("Consumo operacional em kW", 85)
+    capacidade_total_kwh = 1200
+    consumo_decolagem_kwh = 260
+    perdas_percentual = 6
+    consumo_operacional_kw = 85
 
     carga_atual_percentual = telemetria["nivel_energia_percentual"]
     energia_disponivel_kwh = capacidade_total_kwh * (carga_atual_percentual / 100)
@@ -105,23 +46,47 @@ def calcular_energia(telemetria):
     autonomia_horas = energia_restante_kwh / consumo_operacional_kw
     energia_suficiente = energia_restante_kwh > 0 and autonomia_horas > 0
 
-    mostrar_titulo("ANÁLISE ENERGÉTICA")
-    print(f"Energia disponível: {energia_disponivel_kwh:.2f} kWh")
-    print(f"Perdas energéticas: {perdas_kwh:.2f} kWh")
-    print(f"Energia restante após decolagem: {energia_restante_kwh:.2f} kWh")
-    if energia_suficiente:
-        print(f"Autonomia inicial estimada: {autonomia_horas:.2f} horas")
-    else:
-        print("Autonomia inicial estimada: 0.00 horas")
-        print("Energia insuficiente para sustentar a decolagem.")
-
     return {
-        "Energia pos-decolagem": energia_suficiente,
+        "Energia após decolagem": energia_suficiente,
         "energia_disponivel_kwh": energia_disponivel_kwh,
         "perdas_kwh": perdas_kwh,
         "energia_restante_kwh": energia_restante_kwh,
         "autonomia_horas": max(0, autonomia_horas),
     }
+
+
+def mostrar_telemetria_final(telemetria):
+    mostrar_titulo("TELEMETRIA FINAL DA SIMULAÇÃO")
+    for dado, valor in telemetria.items():
+        print(f"{dado}: {valor}")
+
+
+def mostrar_resumo_temporal(analise):
+    leituras = analise["leituras"]
+    primeira = leituras[0]
+    ultima = leituras[-1]
+
+    mostrar_titulo("RESUMO TEMPORAL")
+    print(f"Cenário: {analise['cenario']}")
+    print(f"Leituras geradas: {len(leituras)}")
+    print(f"Tempo inicial: T+{primeira['tempo_decolagem']}s")
+    print(f"Tempo final: T+{ultima['tempo_decolagem']}s")
+    if analise["falhas_persistentes"]:
+        print("Contagem interrompida: falha por 6 leituras consecutivas.")
+        print(f"Falha persistente: {', '.join(analise['falhas_persistentes'])}")
+    print(f"Energia inicial: {primeira['nivel_energia']:.2f}%")
+    print(f"Energia final: {ultima['nivel_energia']:.2f}%")
+    print(f"Pressão LOX final: {ultima['pressao_lox_psi']:.2f} psi")
+    print(f"Sistema elétrico final: {'OK' if ultima['sistema_eletrico_ok'] else 'FALHA'}")
+
+    if analise["alertas_corrigidos"]:
+        print("\nAlertas normalizados durante a contagem:")
+        for tempo, item in analise["alertas_corrigidos"][:5]:
+            print(f"- T+{tempo}s: {item}")
+        if len(analise["alertas_corrigidos"]) > 5:
+            print(f"- mais {len(analise['alertas_corrigidos']) - 5} alerta(s) normalizado(s)")
+    else:
+        print("\nNenhum alerta intermediário foi normalizado.")
 
 
 def mostrar_resultado_verificacoes(verificacoes, titulo):
@@ -131,62 +96,62 @@ def mostrar_resultado_verificacoes(verificacoes, titulo):
         print(f"{item}: {status}")
 
 
-def mostrar_decisao_final(verificacoes):
-    if all(verificacoes.values()):
-        decisao_final = "PRONTO PARA DECOLAR"
-    else:
-        decisao_final = "DECOLAGEM ABORTADA"
+def mostrar_analise_energetica(resultado_energia):
+    mostrar_titulo("ANÁLISE ENERGÉTICA")
+    print(f"Energia disponível: {resultado_energia['energia_disponivel_kwh']:.2f} kWh")
+    print(f"Perdas energéticas: {resultado_energia['perdas_kwh']:.2f} kWh")
+    print(f"Energia restante após decolagem: {resultado_energia['energia_restante_kwh']:.2f} kWh")
+    print(f"Autonomia inicial estimada: {resultado_energia['autonomia_horas']:.2f} horas")
 
+
+def decidir_status(analise, resultado_energia):
+    verificacoes = analise["verificacoes_finais"].copy()
+    verificacoes["Energia após decolagem"] = resultado_energia["Energia após decolagem"]
+    falhas = [item for item, aprovado in verificacoes.items() if not aprovado]
+
+    if falhas or analise["falhas_persistentes"]:
+        return "DECOLAGEM ABORTADA", ", ".join(falhas), verificacoes
+
+    return "PRONTO PARA DECOLAR", None, verificacoes
+
+
+def mostrar_decisao_final(status, motivo_aborto):
     mostrar_titulo("DECISÃO FINAL")
-    print(decisao_final)
+    print(status)
 
-    if decisao_final == "DECOLAGEM ABORTADA":
+    if motivo_aborto:
         print("\nMotivos identificados:")
-        for item, aprovado in verificacoes.items():
-            if not aprovado:
-                print(f"- {item}")
-
-    return decisao_final
+        for motivo in motivo_aborto.split(", "):
+            print(f"- {motivo}")
 
 
-faixas_seguras = {
-    "temperatura_interna_min": 18,
-    "temperatura_interna_max": 30,
-    "temperatura_externa_min": -50,
-    "temperatura_externa_max": 60,
-    "nivel_energia_min": 80,
-    "pressao_tanques_min": 80,
-    "pressao_tanques_max": 110,
-}
+def executar_simulacao(cenario):
+    leituras = gerar_telemetria_cenario(cenario)
+    analise = analisar_cenario(cenario, leituras)
+    telemetria_final = converter_para_telemetria_resumida(analise["telemetria_final"])
+    resultado_energia = calcular_energia(telemetria_final)
+    status, motivo_aborto, verificacoes = decidir_status(analise, resultado_energia)
 
-mostrar_titulo("AURORA SIGER - SISTEMA DE PRÉ-DECOLAGEM")
-opcao = ler_opcao()
+    mostrar_resumo_temporal(analise)
+    mostrar_telemetria_final(telemetria_final)
+    mostrar_resultado_verificacoes(verificacoes, "VERIFICAÇÕES FINAIS DA PRÉ-DECOLAGEM")
+    mostrar_analise_energetica(resultado_energia)
+    mostrar_linha()
+    mostrar_decisao_final(status, motivo_aborto)
 
-if opcao == "1":
-    telemetria = gerar_preset()
-    origem_dados = "Preset seguro"
-else:
-    telemetria = gerar_dados_randomicos()
-    origem_dados = "Dados randômicos"
+    try:
+        id_execucao = salvar_cenario_decolagem(cenario, leituras, status, motivo_aborto)
+        print(f"\nCenário salvo no banco PostgreSQL com o ID {id_execucao}.")
+    except Exception as erro:
+        print("\nNão foi possível salvar o cenário no PostgreSQL.")
+        print(f"Motivo: {erro}")
 
-verificacoes = verificar_telemetria(telemetria, faixas_seguras)
 
-mostrar_titulo(f"TELEMETRIA INFORMADA - {origem_dados.upper()}")
-for dado, valor in telemetria.items():
-    print(f"{dado}: {valor}")
+def main():
+    mostrar_titulo("AURORA SIGER - SISTEMA DE PRÉ-DECOLAGEM")
+    cenario = ler_opcao()
+    executar_simulacao(cenario)
 
-mostrar_resultado_verificacoes(verificacoes, "VERIFICAÇÕES BÁSICAS DA TELEMETRIA")
 
-resultado_energia = calcular_energia(telemetria)
-verificacoes["Energia após decolagem"] = resultado_energia["Energia pos-decolagem"]
-
-mostrar_resultado_verificacoes(verificacoes, "VERIFICAÇÕES FINAIS DA PRÉ-DECOLAGEM")
-mostrar_linha()
-decisao_final = mostrar_decisao_final(verificacoes)
-
-try:
-    id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados)
-    print(f"\nExecução salva no banco PostgreSQL com o ID {id_execucao}.")
-except Exception as erro:
-    print("\nNão foi possível salvar a execução no PostgreSQL.")
-    print(f"Motivo: {erro}")
+if __name__ == "__main__":
+    main()

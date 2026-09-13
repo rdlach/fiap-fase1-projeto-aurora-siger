@@ -1,1 +1,4 @@
-import main_interativo
+from main_interativo import main
+
+
+main()
