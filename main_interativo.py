@@ -184,5 +184,9 @@ mostrar_resultado_verificacoes(verificacoes, "VERIFICAÇÕES FINAIS DA PRÉ-DECO
 mostrar_linha()
 decisao_final = mostrar_decisao_final(verificacoes)
 
-id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados)
-print(f"\nExecução salva no banco SQLite com o ID {id_execucao}.")
+try:
+    id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados)
+    print(f"\nExecução salva no banco PostgreSQL com o ID {id_execucao}.")
+except Exception as erro:
+    print("\nNão foi possível salvar a execução no PostgreSQL.")
+    print(f"Motivo: {erro}")

@@ -125,8 +125,12 @@ resultado_energia = {
     "autonomia_horas": max(0, autonomia_horas),
 }
 
-id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, "Script automático")
-print(f"Execução salva no banco SQLite com o ID {id_execucao}.")
+try:
+    id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, "Script automático")
+    print(f"Execução salva no banco PostgreSQL com o ID {id_execucao}.")
+except Exception as erro:
+    print("Não foi possível salvar a execução no PostgreSQL.")
+    print(f"Motivo: {erro}")
 
 
 # Análise assistida por IA, simulada a partir das regras do projeto

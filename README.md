@@ -64,8 +64,11 @@ DECOLAGEM ABORTADA
 - `nave-cod-siger.ipynb`: notebook principal com a simulação, verificações e análise energética.
 - `aurora_siger.py`: versão em script Python para execução direta no PyCharm ou terminal.
 - `main_interativo.py`: versão interativa em terminal, usando `input()` para preencher os dados da nave.
-- `banco_dados.py`: funções responsáveis por criar o banco SQLite e salvar cada execução.
+- `banco_dados.py`: funções responsáveis por conectar no PostgreSQL, criar a tabela e salvar cada execução.
 - `consultar_execucoes.py`: consulta as últimas execuções salvas no banco.
+- `requirements.txt`: dependência necessária para conectar o Python ao PostgreSQL.
+- `sql/schema.sql`: script SQL com a estrutura da tabela usada no PostgreSQL.
+- `sql/dados_exemplo.sql`: dados de exemplo para popular a tabela.
 - `prints/`: pasta reservada para prints da execução.
 - `relatorio/relatorio_pre_decolagem.md`: texto-base do relatório final.
 - `relatorio/`: pasta reservada para o PDF final da atividade.
@@ -149,11 +152,11 @@ Pelo terminal:
 python3 main_interativo.py
 ```
 
-### Histórico em banco SQL
+### Histórico em banco PostgreSQL
 
-Depois de cada execução do `aurora_siger.py` ou do `main_interativo.py`, o sistema salva automaticamente os dados no banco SQLite `aurora_siger_execucoes.db`.
+Depois de cada execução do `aurora_siger.py` ou do `main_interativo.py`, o sistema tenta salvar automaticamente os dados em um banco PostgreSQL.
 
-Esse banco é criado sozinho na primeira execução. Ele guarda:
+A tabela é criada sozinha na primeira execução. Ela guarda:
 
 - data e hora da execução;
 - origem dos dados;
@@ -161,13 +164,57 @@ Esse banco é criado sozinho na primeira execução. Ele guarda:
 - valores da análise energética;
 - decisão final da missão.
 
+Para instalar a dependência do PostgreSQL no Python:
+
+```bash
+pip install -r requirements.txt
+```
+
+Para criar o banco local pelo terminal do PostgreSQL:
+
+```bash
+createdb aurora_siger
+```
+
+Para criar a tabela manualmente:
+
+```bash
+psql -d aurora_siger -f sql/schema.sql
+```
+
+Para inserir dados de exemplo:
+
+```bash
+psql -d aurora_siger -f sql/dados_exemplo.sql
+```
+
+O código usa estes dados de conexão como padrão:
+
+| Configuração | Valor padrão |
+| --- | --- |
+| Host | `localhost` |
+| Porta | `5432` |
+| Banco | `aurora_siger` |
+| Usuário | `postgres` |
+| Senha | `postgres` |
+
+Também é possível mudar esses valores por variáveis de ambiente:
+
+```bash
+export POSTGRES_HOST=localhost
+export POSTGRES_PORT=5432
+export POSTGRES_DB=aurora_siger
+export POSTGRES_USER=postgres
+export POSTGRES_PASSWORD=sua_senha
+```
+
 Para consultar as últimas execuções salvas:
 
 ```bash
 python3 consultar_execucoes.py
 ```
 
-O arquivo `.db` não é enviado para o GitHub, porque ele é gerado durante os testes de cada máquina.
+Se o PostgreSQL não estiver configurado, o programa continua mostrando o resultado da missão e informa que não conseguiu salvar no banco.
 
 ## Prints da execução
 

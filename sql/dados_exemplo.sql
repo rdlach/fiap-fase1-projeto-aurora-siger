@@ -1,0 +1,45 @@
+INSERT INTO execucoes_pre_decolagem (
+    data_hora,
+    origem_dados,
+    temperatura_interna_c,
+    temperatura_externa_c,
+    integridade_estrutural,
+    nivel_energia_percentual,
+    pressao_tanques_percentual,
+    modulos_criticos,
+    energia_disponivel_kwh,
+    perdas_kwh,
+    energia_restante_kwh,
+    autonomia_horas,
+    decisao_final
+) VALUES
+(
+    '2026-09-13 14:30:47',
+    'Preset seguro',
+    24.00,
+    -18.00,
+    1,
+    87.00,
+    95.00,
+    'OK',
+    1044.00,
+    62.64,
+    721.36,
+    8.49,
+    'PRONTO PARA DECOLAR'
+),
+(
+    '2026-09-13 14:30:48',
+    'Energia insuficiente',
+    24.00,
+    -18.00,
+    1,
+    60.00,
+    95.00,
+    'OK',
+    300.00,
+    150.00,
+    -30.18,
+    0.00,
+    'DECOLAGEM ABORTADA'
+);
