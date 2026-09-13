@@ -1,5 +1,7 @@
 """Simulação de pré-decolagem da nave Aurora Siger."""
 
+from banco_dados import salvar_execucao
+
 
 def mostrar_titulo(titulo):
     print("\n" + titulo)
@@ -115,6 +117,16 @@ else:
 
 print("-" * 45)
 print(f"Decisão final: {decisao_final}")
+
+resultado_energia = {
+    "energia_disponivel_kwh": energia_disponivel_kwh,
+    "perdas_kwh": perdas_kwh,
+    "energia_restante_kwh": energia_restante_kwh,
+    "autonomia_horas": max(0, autonomia_horas),
+}
+
+id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, "Script automático")
+print(f"Execução salva no banco SQLite com o ID {id_execucao}.")
 
 
 # Análise assistida por IA, simulada a partir das regras do projeto

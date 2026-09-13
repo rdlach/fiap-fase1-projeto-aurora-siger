@@ -2,6 +2,8 @@
 
 import random
 
+from banco_dados import salvar_execucao
+
 
 def ler_float(mensagem, valor_padrao):
     entrada = input(f"{mensagem} [{valor_padrao}]: ").strip()
@@ -144,6 +146,8 @@ def mostrar_decisao_final(verificacoes):
             if not aprovado:
                 print(f"- {item}")
 
+    return decisao_final
+
 
 faixas_seguras = {
     "temperatura_interna_min": 18,
@@ -178,4 +182,7 @@ verificacoes["Energia após decolagem"] = resultado_energia["Energia pos-decolag
 
 mostrar_resultado_verificacoes(verificacoes, "VERIFICAÇÕES FINAIS DA PRÉ-DECOLAGEM")
 mostrar_linha()
-mostrar_decisao_final(verificacoes)
+decisao_final = mostrar_decisao_final(verificacoes)
+
+id_execucao = salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados)
+print(f"\nExecução salva no banco SQLite com o ID {id_execucao}.")

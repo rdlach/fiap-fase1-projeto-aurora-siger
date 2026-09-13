@@ -64,6 +64,8 @@ DECOLAGEM ABORTADA
 - `nave-cod-siger.ipynb`: notebook principal com a simulação, verificações e análise energética.
 - `aurora_siger.py`: versão em script Python para execução direta no PyCharm ou terminal.
 - `main_interativo.py`: versão interativa em terminal, usando `input()` para preencher os dados da nave.
+- `banco_dados.py`: funções responsáveis por criar o banco SQLite e salvar cada execução.
+- `consultar_execucoes.py`: consulta as últimas execuções salvas no banco.
 - `prints/`: pasta reservada para prints da execução.
 - `relatorio/relatorio_pre_decolagem.md`: texto-base do relatório final.
 - `relatorio/`: pasta reservada para o PDF final da atividade.
@@ -146,6 +148,26 @@ Pelo terminal:
 ```bash
 python3 main_interativo.py
 ```
+
+### Histórico em banco SQL
+
+Depois de cada execução do `aurora_siger.py` ou do `main_interativo.py`, o sistema salva automaticamente os dados no banco SQLite `aurora_siger_execucoes.db`.
+
+Esse banco é criado sozinho na primeira execução. Ele guarda:
+
+- data e hora da execução;
+- origem dos dados;
+- dados de telemetria;
+- valores da análise energética;
+- decisão final da missão.
+
+Para consultar as últimas execuções salvas:
+
+```bash
+python3 consultar_execucoes.py
+```
+
+O arquivo `.db` não é enviado para o GitHub, porque ele é gerado durante os testes de cada máquina.
 
 ## Prints da execução
 
