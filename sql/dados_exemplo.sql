@@ -47,7 +47,7 @@ SELECT
     TRUE,
     TRUE,
     TRUE,
-    TRUE,
+    FALSE,
     FALSE,
     id
 FROM nova_decolagem;
@@ -62,10 +62,10 @@ WITH nova_decolagem AS (
     )
     VALUES (
         '2026-09-13 14:32:47',
-        '2026-09-13 14:33:47',
+        '2026-09-13 14:33:27',
         'FALHA_CRITICA',
         'DECOLAGEM ABORTADA',
-        'Falha crítica persistente no sistema elétrico'
+        'Sistema elétrico'
     )
     RETURNING id
 )
@@ -88,20 +88,20 @@ INSERT INTO telemetria (
     decolagem_id
 )
 SELECT
-    '2026-09-13 14:33:47',
-    60,
-    23.98,
-    17.76,
+    '2026-09-13 14:33:27',
+    40,
+    23.48,
+    17.84,
     TRUE,
-    1.500,
-    91.50,
-    125.90,
-    127.80,
+    1.200,
+    95.50,
+    125.10,
+    127.20,
     TRUE,
     TRUE,
     TRUE,
     FALSE,
-    TRUE,
+    FALSE,
     FALSE,
     id
 FROM nova_decolagem;

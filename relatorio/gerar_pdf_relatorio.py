@@ -144,22 +144,25 @@ def build_pdf():
     add_heading(story, "1.1 Organização e descrição da telemetria", h1)
     add_paragraph(
         story,
-        "Foram simulados dados essenciais para uma avaliação inicial da nave antes da decolagem. Esses dados representam informações que poderiam ser recebidas por sensores e sistemas de monitoramento.",
+        "Foram simulados dados essenciais para uma avaliação inicial da nave antes da decolagem. A tabela abaixo usa a leitura final do cenário SUCESSO_DIRETO, em T+60s.",
         body,
     )
     add_table(
         story,
         [
             ["Dado", "Valor simulado", "Descrição"],
-            ["Temperatura interna", "24 °C", "Condição térmica interna da nave"],
-            ["Temperatura externa", "-18 °C", "Condição térmica externa antes da decolagem"],
+            ["Temperatura interna", "23,60 °C", "Condição térmica interna da nave"],
+            ["Temperatura externa", "17,70 °C", "Condição térmica externa antes da decolagem"],
             ["Integridade estrutural", "1", "Estrutura íntegra quando igual a 1"],
-            ["Nível de energia", "87%", "Percentual de carga disponível"],
-            ["Pressão dos tanques", "95%", "Condição operacional dos tanques"],
+            ["Vibração estrutural", "1,500 g RMS", "Vibração medida na estrutura"],
+            ["Nível de energia", "94%", "Percentual de carga disponível"],
+            ["Pressão LH2", "126,00 psi", "Condição operacional do tanque de hidrogênio líquido"],
+            ["Pressão LOX", "127,80 psi", "Condição operacional do tanque de oxigênio líquido"],
             ["Módulos críticos", "OK", "Estado dos módulos essenciais da nave"],
         ],
     )
 
+    story.append(PageBreak())
     add_heading(story, "1.2 Algoritmo de verificação", h1)
     add_paragraph(
         story,
@@ -170,12 +173,14 @@ def build_pdf():
         story,
         [
             ["Item verificado", "Critério seguro", "Observação"],
-            ["Temperatura interna", "18 °C a 30 °C", "Ambiente interno estável"],
-            ["Temperatura externa", "-50 °C a 60 °C", "Condição externa aceita"],
+            ["Temperatura interna", "18 °C a 27 °C", "Ambiente interno estável"],
+            ["Temperatura externa", "10 °C a 34 °C", "Condição externa aceita"],
+            ["Vibração estrutural", "0 a 1,5 g RMS", "Limite de vibração"],
             ["Integridade estrutural", "Igual a 1", "Sem falha estrutural"],
             ["Nível de energia", "Maior ou igual a 80%", "Energia mínima para partida"],
-            ["Pressão dos tanques", "80% a 110%", "Faixa operacional"],
-            ["Módulos críticos", "Igual a OK", "Sistemas principais funcionando"],
+            ["Pressão LH2", "120 a 130 psi", "Faixa operacional"],
+            ["Pressão LOX", "120 a 130 psi", "Faixa operacional"],
+            ["Módulos críticos", "Todos OK", "Motor, navegação, comunicação e sistema elétrico"],
         ],
     )
     story.append(PageBreak())
@@ -184,11 +189,16 @@ def build_pdf():
         story,
         "INÍCIO\n"
         "    Ler dados de telemetria da nave\n"
-        "    Verificar temperatura, estrutura, energia, pressão e módulos\n"
-        "    SE todas as verificações forem verdadeiras ENTÃO\n"
-        "        Exibir \"PRONTO PARA DECOLAR\"\n"
-        "    SENÃO\n"
+        "    Verificar temperatura, vibração, estrutura, energia, pressões e módulos\n"
+        "    SE alguma falha persistir por seis leituras consecutivas ENTÃO\n"
         "        Exibir \"DECOLAGEM ABORTADA\"\n"
+        "    SENÃO\n"
+        "        Usar a última leitura para a decisão final\n"
+        "        SE todas as verificações forem verdadeiras ENTÃO\n"
+        "            Exibir \"PRONTO PARA DECOLAR\"\n"
+        "        SENÃO\n"
+        "            Exibir \"DECOLAGEM ABORTADA\"\n"
+        "        FIM SE\n"
         "    FIM SE\n"
         "FIM",
         code,
@@ -197,20 +207,20 @@ def build_pdf():
     add_heading(story, "1.3 Script em Python", h1)
     add_paragraph(
         story,
-        "A lógica foi implementada no notebook nave-cod-siger.ipynb. O script cria os dados simulados, executa as verificações e imprime a decisão final.",
+        "A lógica temporal foi implementada em simulacao_decolagem.py e utilizada pelo notebook nave-cod-siger.ipynb. O script gera leituras sequenciais, executa as verificações e imprime a decisão final.",
         body,
     )
     add_code(
         story,
-        "if all(verificacoes.values()):\n"
-        "    decisao_final = \"PRONTO PARA DECOLAR\"\n"
+        "if falhas or analise[\"falhas_persistentes\"]:\n"
+        "    decisao_final = \"DECOLAGEM ABORTADA\"\n"
         "else:\n"
-        "    decisao_final = \"DECOLAGEM ABORTADA\"",
+        "    decisao_final = \"PRONTO PARA DECOLAR\"",
         code,
     )
     add_paragraph(
         story,
-        "O comando all() verifica se todas as condições são verdadeiras. Se uma única condição falhar, a decisão final passa a ser DECOLAGEM ABORTADA.",
+        "Além da verificação final, o programa considera falhas persistentes durante a contagem. Se uma condição grave permanecer fora do padrão por seis leituras consecutivas, a contagem é interrompida.",
         body,
     )
 
@@ -226,7 +236,7 @@ def build_pdf():
         [
             ["Item", "Valor", "Descrição"],
             ["Capacidade total", "1200 kWh", "Capacidade máxima simulada"],
-            ["Carga atual", "87%", "Carga informada pela telemetria"],
+            ["Carga atual", "94%", "Carga informada pela telemetria"],
             ["Consumo na decolagem", "260 kWh", "Energia estimada para a partida"],
             ["Perdas energéticas", "6%", "Perdas do processo"],
             ["Consumo operacional", "85 kW", "Consumo médio após decolagem"],
@@ -234,10 +244,10 @@ def build_pdf():
     )
     add_code(
         story,
-        "Energia disponível = 1200 x 0,87 = 1044 kWh\n"
-        "Perdas energéticas = 1044 x 0,06 = 62,64 kWh\n"
-        "Energia restante = 1044 - 260 - 62,64 = 721,36 kWh\n"
-        "Autonomia inicial = 721,36 / 85 = 8,49 horas",
+        "Energia disponível = 1200 x 0,94 = 1128 kWh\n"
+        "Perdas energéticas = 1128 x 0,06 = 67,68 kWh\n"
+        "Energia restante = 1128 - 260 - 67,68 = 800,32 kWh\n"
+        "Autonomia inicial = 800,32 / 85 = 9,42 horas",
         code,
     )
     add_paragraph(
@@ -258,15 +268,17 @@ def build_pdf():
             ["Dado", "Classificação", "Uso na decisão"],
             ["Temperatura interna", "Numérico real", "Verificação de faixa segura"],
             ["Temperatura externa", "Numérico real", "Verificação de faixa segura"],
+            ["Vibração estrutural", "Numérico real", "Verificação de faixa segura"],
             ["Integridade estrutural", "Lógico/binário", "Aprovado ou falha"],
             ["Nível de energia", "Numérico real", "Energia mínima"],
-            ["Pressão dos tanques", "Numérico real", "Faixa operacional"],
-            ["Módulos críticos", "Textual/categórico", "Status OK ou falha"],
+            ["Pressão LH2", "Numérico real", "Faixa operacional"],
+            ["Pressão LOX", "Numérico real", "Faixa operacional"],
+            ["Módulos críticos", "Lógico/binário e categórico", "Status OK ou falha"],
         ],
     )
     add_paragraph(
         story,
-        "Com os dados simulados, nenhuma anomalia crítica foi identificada. Mesmo assim, recomenda-se manter monitoramento contínuo durante a contagem regressiva e revalidar energia, pressão e módulos críticos antes da ignição.",
+        "A decisão automática do programa utiliza regras e faixas de segurança predefinidas. A inteligência artificial foi utilizada como apoio para classificar os dados, interpretar possíveis anomalias e elaborar sugestões de risco. A decisão final continua sujeita às regras de segurança e à supervisão humana. Não se afirma que o programa possui uma IA própria ou um modelo treinado com dados de missões reais.",
         body,
     )
 
@@ -302,17 +314,18 @@ def build_pdf():
         body,
     )
 
+    story.append(PageBreak())
     add_heading(story, "2. Entregáveis", h1)
     add_paragraph(
         story,
-        "O projeto contém notebook Python, README.md com explicação e instruções, pasta para prints da execução e este relatório em PDF. Antes da entrega final, o grupo deve inserir os prints no README e conferir o link público do GitHub.",
+        "O projeto contém notebook Python, README.md com explicação e instruções, pasta prints/evidencias/ com imagens da implementação, texto-base do relatório e PDF final em relatorio/relatorio_pre_decolagem.pdf.",
         body,
     )
 
     add_heading(story, "3. Conclusão", h1)
     add_paragraph(
         story,
-        "A simulação mostrou que os dados da nave Aurora Siger estão dentro das faixas seguras estabelecidas. A análise energética também indica carga suficiente para a etapa inicial da missão. Portanto, considerando os parâmetros definidos nesta simulação, a decisão operacional é: PRONTO PARA DECOLAR.",
+        "A simulação do cenário SUCESSO_DIRETO mostrou que os dados finais da nave Aurora Siger estão dentro das faixas seguras estabelecidas. A análise energética também indica carga suficiente para a etapa inicial da missão. Portanto, considerando os parâmetros definidos nesta simulação, a decisão operacional é: PRONTO PARA DECOLAR.",
         body,
     )
 

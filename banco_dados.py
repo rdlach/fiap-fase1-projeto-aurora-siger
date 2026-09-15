@@ -216,7 +216,11 @@ def salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados):
     criar_tabela_execucoes()
     data_execucao = datetime.now()
     modulos_ok = _modulos_criticos_ok(telemetria)
-    pressao_tanques = telemetria["pressao_tanques_percentual"]
+    pressao_media_tanques = telemetria.get("pressao_media_tanques_psi")
+    if pressao_media_tanques is None:
+        pressao_media_tanques = (
+            telemetria["pressao_lh2_psi"] + telemetria["pressao_lox_psi"]
+        ) / 2
 
     with conectar_postgres() as conexao:
         with conexao.cursor() as cursor:
@@ -272,14 +276,14 @@ def salvar_execucao(telemetria, resultado_energia, decisao_final, origem_dados):
                     telemetria["integridade_estrutural"] == 1,
                     telemetria.get("vibracao_estrutural_g", 0),
                     telemetria["nivel_energia_percentual"],
-                    telemetria.get("pressao_lh2_psi", pressao_tanques),
-                    telemetria.get("pressao_lox_psi", pressao_tanques),
+                    telemetria.get("pressao_lh2_psi", pressao_media_tanques),
+                    telemetria.get("pressao_lox_psi", pressao_media_tanques),
                     telemetria.get("motor_ok", modulos_ok),
                     telemetria.get("navegacao_ok", modulos_ok),
                     telemetria.get("comunicacao_ok", modulos_ok),
                     telemetria.get("sistema_eletrico_ok", modulos_ok),
-                    telemetria.get("resfriamento_ativo", True),
-                    telemetria.get("pressurizacao_ativa", True),
+                    telemetria.get("resfriamento_ativo", False),
+                    telemetria.get("pressurizacao_ativa", False),
                     id_execucao,
                 ),
             )

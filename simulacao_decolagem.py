@@ -309,6 +309,6 @@ def converter_para_telemetria_resumida(leitura):
         "temperatura_externa_c": leitura["temperatura_externa"],
         "integridade_estrutural": 1 if leitura["integridade_estrutural_ok"] else 0,
         "nivel_energia_percentual": leitura["nivel_energia"],
-        "pressao_tanques_percentual": round(pressao_media, 2),
+        "pressao_media_tanques_psi": round(pressao_media, 2),
         "modulos_criticos": "OK" if modulos_ok else "FALHA",
     }

@@ -68,14 +68,13 @@ DECOLAGEM ABORTADA
 - `simulacao_decolagem.py`: lógica dos cenários de pré-decolagem inspirada no modelo criado pelo José.
 - `banco_dados.py`: funções responsáveis por conectar no PostgreSQL, criar as tabelas e salvar cada cenário.
 - `consultar_execucoes.py`: consulta os últimos cenários salvos no banco.
-- `requirements.txt`: dependência necessária para conectar o Python ao PostgreSQL.
+- `requirements.txt`: dependências necessárias para PostgreSQL, notebook e geração do PDF.
 - `sql/schema.sql`: script SQL com a estrutura das tabelas usadas no PostgreSQL.
 - `sql/dados_exemplo.sql`: dados de exemplo para popular a tabela.
 - `dump-aurora_siger-202609022050.sql`: dump usado como referência para o modelo de cenários e telemetria temporal.
-- `prints/`: pasta reservada para prints da execução.
+- `prints/evidencias/`: prints usados como evidência dos principais ajustes do projeto.
 - `relatorio/relatorio_pre_decolagem.md`: texto-base do relatório final.
-- `relatorio/`: pasta reservada para o PDF final da atividade.
-- `AJUSTES_PENDENTES.md`: checklist do que ainda precisa ser revisado pelo grupo.
+- `relatorio/relatorio_pre_decolagem.pdf`: PDF final da atividade.
 
 ## Formas de demonstrar o projeto
 
@@ -267,18 +266,7 @@ Se o PostgreSQL não estiver configurado, o programa continua mostrando o result
 
 ## Prints da execução
 
-Adicionar aqui os prints após executar o notebook:
-
-- Print da telemetria inicial
-- Print das verificações
-- Print da decisão final
-- Print da análise energética
-
-Exemplo de inserção no README:
-
-```markdown
-![Execução do notebook](prints/nome-do-print.png)
-```
+As evidências principais já estão incluídas na seção **Evidências em prints** deste README. Os arquivos ficam em `prints/evidencias/` e podem ser usados no relatório ou na apresentação do grupo.
 
 ## Resultado esperado
 
@@ -288,7 +276,7 @@ Com os dados simulados atualmente, o sistema deve retornar:
 PRONTO PARA DECOLAR
 ```
 
-A energia disponível calculada é de 1044,00 kWh e a autonomia inicial estimada após decolagem é de aproximadamente 8,49 horas.
+No cenário `SUCESSO_DIRETO`, a simulação termina em `T+60s` com 94% de energia. A energia disponível calculada é de 1128,00 kWh e a autonomia inicial estimada após decolagem é de aproximadamente 9,42 horas.
 
 ## Integrantes
 
